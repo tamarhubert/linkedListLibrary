@@ -18,9 +18,9 @@
 #define ENTRY_MATCH 1
 #define ENTRY_DISMATCH 0
 
-typedef struct LinkedListEntry LinkedListEntry;
+typedef struct lll_Entry lll_Entry;
 
-typedef struct LinkedList LinkedList;
+typedef struct lll_List lll_List;
 
 struct lll_List {
 	lll_Entry *_entry;
