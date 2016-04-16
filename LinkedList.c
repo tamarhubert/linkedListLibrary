@@ -7,92 +7,78 @@
 
 int findFirst(lll_List, lll_Entry**);
 int findLast(lll_List, lll_Entry**);
-int check(lll_List);
+int lll_check(lll_List);
 
 // adds a new entry to an existing list.
 int lll_add(lll_List *list, lll_Entry *entry){
-	if (list == NULL 
-		|| list->_entry == NULL
+	if (list == NULL
+		|| entry == NULL
 		|| entry->_next != NULL
 		|| entry->_previous != NULL
 		|| lll_check(*list) < 0){
 		return LIST_ERROR;
 	}
+	lll_Entry *last = NULL;
+	findLast(*list, &last);
+	if( NULL == last ){
+		list->_entry = entry;
+	}else {
+		last->_next = entry;
+		entry->_previous = last;
+	}
+	return SUCCESS_STATUS;
+}
 
+int lll_remove(lll_List* list, lll_Entry* entry){
+	if(NULL == list || NULL == entry){
+		return LIST_ERROR;
+	}
+	if(entry->_next != NULL && entry->_previous != entry){
+		entry->_next->_previous = entry->_previous;
+		if(list->_entry == entry){
+			list->_entry = entry->_next;
+		}
+	} else if( NULL != entry->_next ){		
+		entry->_next->_previous = NULL;
+	}
+	if(entry->_previous != NULL && entry->_next != entry){
+		entry->_previous->_next = entry->_next;
+		if(list->_entry == entry){
+			list->_entry = entry->_next;
+		}
+	} else if( NULL != entry->_previous ){
+		entry->_previous->_next = NULL;
+	}
+
+	entry->_next = NULL;
+	entry->_previous = NULL;
+
+	return SUCCESS_STATUS;
+}
+
+int lll_check(lll_List list){	
+	int result;
 	lll_Entry *last;
-	findLast(list, &last);
-	last->_next = entry;
-	entry->_previous = last;
+	if( (result = findLast(list, &last)) < 0 ) {
+		return result;
+	}
+
+	lll_Entry *first;
+	if( (result = findFirst(list, &first)) < 0 ) {
+		return result;
+	}
 
 	return SUCCESS_STATUS;
 }
 
-int lll_remove(lll_List* list, lll_Entry* entry);
-	if(entry._next != NULL && entry._previous != entry){
-		entry._next->_previous = entry._previous;
-		if(list->entry == entry){
-			list->_entry = entry._next;
-		}
-	} else {		
-		entry._next->_previous = NULL;
-	}
-	if(entry._previous != NULL && entry._next != entry){
-		entry._previous->_next = entry._next;
-		if(list->entry == entry){
-			list->_entry = entry._next;
-		}
-	} else {
-		entry._previous->_next = NULL;
-	}
 
-	entry._next = NULL;
-	entry._previous = NULL;
-
-	return SUCCESS_STATUS;
-}
-
-int check(lll_List){
-    if(list == NULL){
-        return LIST_ERROR;
-    }
-
-    LinkedList *first = list;
-    LinkedList *last = list;
-
-    int result = NOT_IMPLEMENTED;
-
-    if( (result = gotoLast(&last)) BAD ) {
-        return result;
-    }
-
-    if( (result = gotoFirst(&first)) BAD ) {
-        return result;
-    }
-
-    LinkedList *first2 = last;
-    LinkedList *last2 = first;
-
-    if( (result = gotoLast(&last2)) BAD ) {
-        return result;
-    }
-
-    if( (result = gotoFirst(&first2)) BAD ) {
-        return result;
-    }
-
-    if (first == first2 && last == last2){
-        return SUCCESS_STATUS;
-    }
-    return CORRUPT_LIST_ERROR;
-}
-
-
-int lll_count(lll_List list);
+int lll_count(lll_List list){
 	if(lll_check(list) < 0){
+		printf("%i", lll_check(list));
 		return LIST_ERROR;
 	}
 
-	lll_Entry *current;
+	lll_Entry *current = NULL;
 	findFirst(list, &current);
 	int itemCount = 0;
 	for(; current != NULL; current = current->_next){
@@ -101,35 +87,64 @@ int lll_count(lll_List list);
 	return itemCount;
 }
 
-
+// TODO: Think first, reimplement after.
 int findFirst(lll_List list, lll_Entry** first){
-	LinkedList *list = *lpp;
-	if (list == NULL){
-		return LIST_ERROR;
+	if (list._entry == NULL){
+		*first = NULL;
+		return SUCCESS_STATUS;
 	}
-	// loop detection
-	LinkedList *startEntry = list;
-	for(; list->_next != NULL && list->_next != startEntry; list = list->_next);
-	if( list->_next == startEntry ){
+	// loop and hop detection
+	lll_Entry *current;
+	for(current = list._entry; 
+			current != NULL && NULL != current->_next;
+			current = current->_next){
+		if( current->_next == list._entry ){
+			return LOOP_ERROR;
+		}
+		if( NULL != current->_previous && current->_previous->_next != current ) {
+			return HOP_ERROR;
+		}
+	}
+	if( current->_next == list._entry ){
 		return LOOP_ERROR;
 	}
-	*lpp = list;
+	if( NULL != current->_previous && current->_previous->_next != current ) {
+		return HOP_ERROR;
+	}
+	*first = current;
+
 	return SUCCESS_STATUS;
 }
+
+// TODO: Think first, reimplement after.
 int findLast(lll_List list, lll_Entry** last){
-	LinkedList *list = *lpp;
-	if (list == NULL){
-		return LIST_ERROR;
+	if (list._entry == NULL){
+		*last = NULL;
+		return SUCCESS_STATUS;
 	}
-	// loop detection
-	LinkedList *startEntry = list;
-	for(; list->_next != NULL && list->_next != startEntry; list = list->_next);
-	if( list->_next == startEntry ){
+	// loop and hop detection
+	lll_Entry *current;
+	for(current = list._entry; 
+			current != NULL && NULL != current->_next;
+			current = current->_previous){
+		if( current->_previous == list._entry ){
+			return LOOP_ERROR;
+		}
+		if( NULL != current->_next && current->_next->_previous != current ) {
+			return HOP_ERROR;
+		}
+	}
+	if( current->_previous == list._entry ){
 		return LOOP_ERROR;
 	}
-	*lpp = list;
-	return SUCCESS_STATUS;}
+	if( NULL != current->_next && current->_next->_previous != current ) {
+		return HOP_ERROR;
+	}
 
+	*last = current;
+
+	return SUCCESS_STATUS;
+}
 // outdated code:
 /*
 

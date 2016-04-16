@@ -8,8 +8,9 @@
 #define FAILED_ERROR -1;
 #define LIST_ERROR -2
 #define ENTRY_ERROR -3
-#define LOOP_ERROR -4
-#define CORRUPT_LIST_ERROR -5
+#define CORRUPT_LIST_ERROR -4
+#define LOOP_ERROR -41
+#define HOP_ERROR -42
 #define TEST_FAILED_ERROR -98
 #define NOT_IMPLEMENTED -99
 
@@ -29,7 +30,7 @@ struct lll_List {
 struct lll_Entry {
 	lll_Entry *_next;
 	lll_Entry *_previous;
-	void value;
+	void* value;
 };
 
 typedef int (*Pattern)(lll_Entry);
