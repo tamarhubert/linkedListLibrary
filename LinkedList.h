@@ -4,26 +4,10 @@
 * Created by: Tamar Hubert
 */
 
-// linked list entry
 #ifndef LINKED_LIST_H_
 #define LINKED_LIST_H_
 
-// define errors
-#define FAILED_ERROR -1;
-#define LIST_ERROR -2
-#define ENTRY_ERROR -3
-#define CORRUPT_LIST_ERROR -4
-#define LOOP_ERROR -41
-#define HOP_ERROR -42
-#define TEST_FAILED_ERROR -98
-#define NOT_IMPLEMENTED -99
-
-// define statuses
-#define SUCCESS_STATUS 1
-#define ENTRY_MATCH 1
-#define ENTRY_DISMATCH 0
-
-typedef struct lll_Entry lll_Element;
+typedef struct lll_Element lll_Element;
 
 typedef struct lll_List lll_List;
 

@@ -7,4 +7,4 @@ DEPS = LinkedList.h
 
 make: LinkedListTests.o
 	cd .. && $(MAKE)
-	$(CC) -o LinkedListTests LinkedListTests.o
+	$(CC) -o LinkedListTests LinkedListTests.o ../LinkedList.o
