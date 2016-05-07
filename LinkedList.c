@@ -27,7 +27,10 @@ int lll_add(lll_List *list, lll_Element *newElement){
 void lll_removeAtIndex(lll_List*, int);
 void lll_elementAtIndex(lll_List, int, lll_Element**);
 int lll_indexOfElement(lll_List, lll_Element);
-int lll_size(lll_List);
+
+int lll_size(lll_List list){
+    return list.size;
+}
 
 
 // developer tools
