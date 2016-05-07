@@ -29,6 +29,7 @@ int lll_add(lll_List *list, lll_Entry *entry){
 	return SUCCESS_STATUS;
 }
 
+// removes an entry from a list
 int lll_remove(lll_List* list, lll_Entry* entry){
 	if(NULL == list || NULL == entry){
 		return LIST_ERROR;
@@ -56,14 +57,15 @@ int lll_remove(lll_List* list, lll_Entry* entry){
 	return SUCCESS_STATUS;
 }
 
+// validates the integrity of a list
 int lll_check(lll_List list){	
 	int result;
-	lll_Entry *last;
+	lll_Entry *last = NULL;
 	if( (result = findLast(list, &last)) < 0 ) {
 		return result;
 	}
 
-	lll_Entry *first;
+	lll_Entry *first = NULL;
 	if( (result = findFirst(list, &first)) < 0 ) {
 		return result;
 	}
@@ -74,22 +76,21 @@ int lll_check(lll_List list){
 
 int lll_count(lll_List list){
 	if(lll_check(list) < 0){
-		printf("%i", lll_check(list));
 		return LIST_ERROR;
 	}
+	lll_Entry *first = NULL;
+	findFirst(list, &first);
 
-	lll_Entry *current = NULL;
-	findFirst(list, &current);
-	int itemCount = 0;
-	for(; current != NULL; current = current->_next){
+	lll_Entry *current; int itemCount = 0;
+	for(current = first; NULL != current; current = current->_next){
 		itemCount++;
 	}
 	return itemCount;
 }
 
-// TODO: Think first, reimplement after.
-int findFirst(lll_List list, lll_Entry** first){
-	if (list._entry == NULL){
+// TODO: Think first, re-implement after.
+int findFirst(lll_List list, lll_Entry** first) {
+    if (NULL == list._entry){
 		*first = NULL;
 		return SUCCESS_STATUS;
 	}
@@ -98,25 +99,27 @@ int findFirst(lll_List list, lll_Entry** first){
 	for(current = list._entry; 
 			current != NULL && NULL != current->_next;
 			current = current->_next){
-		if( current->_next == list._entry ){
+		if( current == list._entry ){
 			return LOOP_ERROR;
-		}
+	    }
 		if( NULL != current->_previous && current->_previous->_next != current ) {
 			return HOP_ERROR;
 		}
 	}
+    
 	if( current->_next == list._entry ){
 		return LOOP_ERROR;
 	}
 	if( NULL != current->_previous && current->_previous->_next != current ) {
 		return HOP_ERROR;
 	}
+    
 	*first = current;
 
 	return SUCCESS_STATUS;
 }
 
-// TODO: Think first, reimplement after.
+// TODO: Think first, re-implement after.
 int findLast(lll_List list, lll_Entry** last){
 	if (list._entry == NULL){
 		*last = NULL;
@@ -125,7 +128,7 @@ int findLast(lll_List list, lll_Entry** last){
 	// loop and hop detection
 	lll_Entry *current;
 	for(current = list._entry; 
-			current != NULL && NULL != current->_next;
+			current != NULL && NULL != current->_previous;
 			current = current->_previous){
 		if( current->_previous == list._entry ){
 			return LOOP_ERROR;
