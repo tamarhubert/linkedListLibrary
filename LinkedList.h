@@ -36,7 +36,7 @@ void lll_removeAtIndex(lll_List*, int);
 /*
 * retrives the element of the given index.
 */
-void lll_elementAtIndex(lll_List, int, lll_Element**);
+lll_Element* lll_elementAtIndex(lll_List, int);
 
 /*
 * returns the index the specivied element
