@@ -12,6 +12,7 @@
 int canAddNewElement(void);
 int canRemoveElementAtIndex(void);
 int canGetElementAtIndex(void);
+int canGetIndexOfElement(void);
 int canTellSize(void);
 void freeList(lll_List*);
 
@@ -20,10 +21,13 @@ int main (void) {
         printf("lll can add new element.\n");
     }
     if(canRemoveElementAtIndex() == 0){
-        printf("lll can remove element at index\n");
+        printf("lll can remove element at index.\n");
     }
     if(canGetElementAtIndex() == 0){
-        printf("lll can get element at index\n");
+        printf("lll can get element at index.\n");
+    }
+    if(canGetIndexOfElement() == 0){
+        printf("lll can get index of element.\n");
     }
     if(canTellSize() == 0){
         printf("lll can tell size.\n");
@@ -111,6 +115,32 @@ int canGetElementAtIndex(void){
     }
     freeList(list);
     return 0;
+}
+
+int canGetIndexOfElement(void){
+    lll_List *list = malloc(sizeof(lll_List));
+    lll_Element *element;
+
+    int i;
+    for(i = 0; i < 10; i++) {
+        element = malloc(sizeof(lll_Element));
+        int *value = &i;
+        element->value = value;
+        lll_add(list, element);
+    }
+    for(i = 0; i < 10; i++) {
+        lll_elementAtIndex(*list, i, &element);
+        int indexOfElement = lll_indexOfElement(*list, element);
+
+        if(indexOfElement != i){
+            printf("index of element should be %i but is %i\n", i, indexOfElement);
+            freeList(list);
+            return -1;
+        }
+    }
+    freeList(list);
+    return 0;
+    
 }
 
 int canTellSize(void){

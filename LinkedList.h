@@ -41,7 +41,7 @@ void lll_elementAtIndex(lll_List, int, lll_Element**);
 /*
 * returns the index the specivied element
 */
-int lll_indexOfElement(lll_List, lll_Element);
+int lll_indexOfElement(lll_List, lll_Element*);
 
 /*
 * retuns the size of the given list.

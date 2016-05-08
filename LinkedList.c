@@ -68,7 +68,16 @@ void lll_elementAtIndex(lll_List list, int index, lll_Element **element){
     }
     *element = current;
 }
-int lll_indexOfElement(lll_List, lll_Element);
+int lll_indexOfElement(lll_List list, lll_Element *element){
+    int i; lll_Element *current = list.gateway;
+    for(i = 0; i < list.size; i++){
+        if(current == element){
+            return i;
+        }
+        current = current->next;
+    }
+    return -1;
+}
 
 int lll_size(lll_List list){
     return list.size;
