@@ -62,4 +62,9 @@ int lll_count(lll_List);
 */
 int lll_check(lll_List);
 
+/*
+* prints each element of the list.
+*/
+int lll_print(lll_List);
+
 #endif /* LINKED_LIST_H_ */
