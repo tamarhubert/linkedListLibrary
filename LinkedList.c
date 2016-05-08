@@ -28,7 +28,28 @@ int lll_add(lll_List *list, lll_Element *newElement){
     return list->size++;
 }
 
-void lll_removeAtIndex(lll_List *list, int index);
+void lll_removeAtIndex(lll_List *list, int index){
+    lll_Element *element;
+    lll_elementAtIndex(*list, index, &element);
+    if(NULL == element){
+        return;
+    }
+
+    if(element == list->gateway){
+        list->gateway = element->next;
+    }
+    if(element == list->gateway){
+        list->gateway = NULL;
+    }
+
+ 	element->next->previous = element->previous;
+    element->previous->next = element->next;
+
+ 	element->next = NULL;
+ 	element->previous = NULL;
+
+    list->size--;
+}
 
 void lll_elementAtIndex(lll_List list, int index, lll_Element **element){
     if(NULL == list.gateway){
