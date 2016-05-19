@@ -10,9 +10,9 @@
 #include "LinkedList.h"
 
 int lll_add(lll_List *list, lll_Element *newElement){
-    if(NULL == newElement){
+    if(NULL == list || NULL == newElement){
         return -1;
-    }    
+    }
     if(NULL == list->gateway){
         newElement->next = newElement;
         newElement->previous = newElement;

@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-I.
+CFLAGS=-I .
 DEPS = LinkedList.h
 
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o ../obj/$@ $< $(CFLAGS)
 
 make: LinkedList.o

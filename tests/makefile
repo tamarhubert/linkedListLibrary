@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-I.
-DEPS = LinkedList.h
+DEPS = ../src/LinkedList.h
 
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o ../obj/$@ $< $(CFLAGS)
 
 make: LinkedListTests.o
-	cd .. && $(MAKE)
-	$(CC) -o LinkedListTests LinkedListTests.o ../LinkedList.o
+	cd ../src && $(MAKE)
+	$(CC) -o ../obj/LinkedListTests ../obj/LinkedListTests.o ../obj/LinkedList.o
