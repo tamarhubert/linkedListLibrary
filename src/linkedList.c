@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "LinkedList.h"
+#include "linkedList.h"
 
 int lll_add(lll_List *list, lll_Element *newElement){
     if(NULL == list || NULL == newElement){

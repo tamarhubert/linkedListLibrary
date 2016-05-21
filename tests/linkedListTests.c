@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../src/LinkedList.h"
+#include "../src/linkedList.h"
 
 int canAddNewElement(void);
 int canRemoveElementAtIndex(void);
