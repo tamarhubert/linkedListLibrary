@@ -7,6 +7,11 @@
 #ifndef LINKED_LIST_H_
 #define LINKED_LIST_H_
 
+#include "../lib/threadingProcessingLibrary/src/threadingProcessingLibrary.h"
+
+
+typedef void* LLL_LIST;
+
 typedef struct lll_Element lll_Element;
 
 typedef struct lll_List lll_List;
@@ -14,6 +19,7 @@ typedef struct lll_List lll_List;
 struct lll_List {
 	int size;
 	lll_Element *gateway;
+	void* mutex;
 };
 
 struct lll_Element {
@@ -23,15 +29,26 @@ struct lll_Element {
 };
 
 /*
+* creates a new list.
+*/
+LL_LIST* lll_newList();
+
+/*
+* frees an empty list.
+*/
+int lll_freeList(LL_LIST*);
+
+
+/*
 * adds a new entry to an existing linked list.
 * returns the list index of the entry.
 */
-int lll_add(lll_List*, lll_Element*);
+int lll_add(lll_LIST*, lll_Element*);
 
 /*
 * removes the entry at the index form the list.
 */
-void lll_removeAtIndex(lll_List*, int);
+int lll_removeAtIndex(lll_List*, int);
 
 /*
 * retrives the element of the given index.
