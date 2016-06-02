@@ -2,7 +2,10 @@ CC=gcc
 CFLAGS=-I . -g
 DEPS = linkedList.h
 
-%.o: %.c $(DEPS)
-	$(CC) -c -fPIC -o ../obj/$@ $< $(CFLAGS)
+OBJ=../obj
+LIB=../lib
 
-make: linkedList.o
+%.o: %.c $(DEPS)
+	$(CC) -c -fPIC -o $(OBJ)/$@ $< $(CFLAGS)
+
+make: linkedList.o $(LIB)/threadingProcessingLibrary/obj/threadingProcessingLibrary.o

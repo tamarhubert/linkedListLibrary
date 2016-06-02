@@ -36,14 +36,11 @@ int main (void) {
 }
 
 int canAddNewElement(void){
-    lll_List *list = malloc(sizeof(lll_List));
-    lll_Element *newElement;
+    lll_List *list = lll_newList();
 
     int i;
     for(i = 0; i < 10; i++) {
-        newElement = malloc(sizeof(lll_Element));
-
-        int indexOfNewElement = lll_add(list, newElement);
+        int indexOfNewElement = lll_add(list, NULL);
 
         if(indexOfNewElement != i){
             printf("index of new element should be %i but is %i\n", i, indexOfNewElement);
@@ -56,21 +53,17 @@ int canAddNewElement(void){
 }
 
 int canRemoveElementAtIndex(void){
-    lll_List *list = malloc(sizeof(lll_List));
-    lll_Element *newElement;
+    lll_List *list = lll_newList();
 
     int i;
     for(i = 0; i < 10; i++) {
-        newElement = malloc(sizeof(lll_Element));
-        lll_add(list, newElement);
+        lll_add(list, NULL);
     }
 
     for(i = 9; i >= 0; i--) {
-        lll_Element *element = lll_elementAtIndex(*list, i);
         lll_removeAtIndex(list, i);
-        free(element);
-        if(lll_size(*list) != i){
-            printf("size of list after removal should be %i but is %i", i, lll_size(*list));
+        if(lll_size(list) != i){
+            printf("size of list after removal should be %i but is %i", i, lll_size(list));
             freeList(list);
             return -1;
         }
@@ -82,84 +75,61 @@ int canRemoveElementAtIndex(void){
 
 
 int canGetElementAtIndex(void){
-    lll_List *list = malloc(sizeof(lll_List));
-    lll_Element *element;
+    lll_List *list = lll_newList();
 
     int i;
     for(i = 0; i < 10; i++) {
-        element = malloc(sizeof(lll_Element));
-        int *value = &i;
-        element->value = value;
-        lll_add(list, element);
+        int *value = malloc(sizeof(int));
+        *value = i;
+        lll_add(list, value);
     }
 
-    for(i = 0; i < 10; i++) {
-        element = lll_elementAtIndex(*list, i);
-        if(element == NULL){
-            printf("could not find element at %i\n", i);
+    int j;
+    for(j = 0; j < 10; j++) {
+        void *element = NULL;
+        if(lll_elementAtIndex(list, j, &element) != 0){
+            printf("could not find element at %i\n", j);
             freeList(list);
             return -1;
         }
-        if(NULL == element->value){
-            printf("the elements value is %p\n", element->value);
+        
+        if(NULL == element){
+            printf("could not get value at %i\n", j);
             freeList(list);
             return -1;
         }
-        int value = *(int*)element->value;
-        if(value != i){
-            printf("value of element at index %i should be %i but is %i\n", i, i, value);
+
+        int value = *(int*)element;
+        if(value != j){
+            printf("value of element at index %i should be %i but is %i\n", j, j, value);
             freeList(list);
             return -1;
         }
     }
+    
     freeList(list);
     return 0;
 }
 
 int canGetIndexOfElement(void){
-    lll_List *list = malloc(sizeof(lll_List));
-    lll_Element *element;
-
-    int i;
-    for(i = 0; i < 10; i++) {
-        element = malloc(sizeof(lll_Element));
-        int *value = &i;
-        element->value = value;
-        lll_add(list, element);
-    }
-    for(i = 0; i < 10; i++) {
-        element = lll_elementAtIndex(*list, i);
-        int indexOfElement = lll_indexOfElement(*list, element);
-
-        if(indexOfElement != i){
-            printf("index of element should be %i but is %i\n", i, indexOfElement);
-            freeList(list);
-            return -1;
-        }
-    }
-    freeList(list);
-    return 0;
-    
+    return -1;
 }
 
 int canTellSize(void){
-    lll_List *list = malloc(sizeof(lll_List));
-    lll_Element *newElement;
+    lll_List *list = lll_newList();
 
     int i;
     // add some elements to the list
     for(i = 0; i < 10; i++) {
-        newElement = malloc(sizeof(lll_Element));
-        lll_add(list, newElement);
+        lll_add(list, NULL);
     }
+    
     // remove some elements from the list
     for(i = 0; i < 5; i++){
-        lll_Element *element = lll_elementAtIndex(*list, 0);
         lll_removeAtIndex(list, 0);
-        free(element);
     }
 
-    if(lll_size(*list) != i){
+    if(lll_size(list) != i){
         freeList(list);
         return -1;
     }
@@ -169,13 +139,14 @@ int canTellSize(void){
 
 void freeList(lll_List *list){
     // free each element
-    int i; int listSize = lll_size(*list);
+    int i; int listSize = lll_size(list);
     for(i = 0; i < listSize; i++){
-        lll_Element *element = 
-        	    lll_elementAtIndex(*list, 0);
+        void* element = NULL;
+        lll_elementAtIndex(list, 0, &element);
+        if(NULL != element) free(element);
         lll_removeAtIndex(list, 0);
-        free(element);
     }
+    
     // free the list it-self
-    free(list);
+    lll_freeList(list);
 }

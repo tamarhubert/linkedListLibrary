@@ -9,22 +9,35 @@
 
 #include "linkedList.h"
 
-LL_LIST* lll_newList(){
-    LLL_List *list = (ll_List)malloc(sizeof(ll_List));
+
+typedef struct lll_Element lll_Element;
+struct lll_List {
+	int size;
+	lll_Element *gateway;
+	void* mutex;
+};
+struct lll_Element {
+	lll_Element *next;
+	lll_Element *previous;
+	void* value;
+};
+
+lll_List* lll_newList(){
+    lll_List *list = malloc(sizeof(lll_List));
     if(NULL == list){
         return NULL;
     }
     list->size = 0;
     list->gateway = NULL;
-    list->mutx = tpl_createMutex();
+    list->mutex = tpl_createMutex();
     
-    return list;
+    return (lll_List*)list;
 }
 
 /*
 * frees an empty list.
 */
-int lll_freeList(LLL_LIST* list){
+int lll_freeList(lll_List* list){
     void* mutex = list->mutex;
     tpl_lockMutex(mutex);
     if(list->size != 0){
@@ -38,42 +51,52 @@ int lll_freeList(LLL_LIST* list){
 
 
 
-int lll_add(LLL_LIST *list, lll_Element *newElement){
-    if(NULL == list || NULL == newElement){
+int lll_add(lll_List *list, void *value){
+    if(NULL == list){
         return -1;
     }
+    lll_Element *element = malloc(sizeof(lll_Element));
+    element->value = value;
+    
     tpl_lockMutex(list->mutex);
     if(NULL == list->gateway){
-        newElement->next = newElement;
-        newElement->previous = newElement;
-        list->gateway = newElement;
+        element->next = element;
+        element->previous = element;
+        list->gateway = element;
         list->size = 1;
         tpl_unlockMutex(list->mutex);
         return 0;
     }
-    newElement->previous = list->gateway->previous;
-    list->gateway->previous->next = newElement;
+    element->previous = list->gateway->previous;
+    list->gateway->previous->next = element;
 
-    newElement->next = list->gateway;
-    list->gateway->previous = newElement;
+    element->next = list->gateway;
+    list->gateway->previous = element;
     list->size++;
     tpl_unlockMutex(list->mutex);
     
-    return list->size;
+    return list->size-1;
 }
 
-int lll_removeAtIndex(LLL_LIST *list, int index){
-    if(NULL == list){
+int lll_removeAtIndex(lll_List *list, int index){
+    if(NULL == list || NULL == list->gateway){
         return -1;
     }
     if(index >= list->size){
         return -2;
     }
 
-    lll_Element *element = lll_elementAtIndex(*list, index);
-    if(NULL == element){
-        return -3;
+    int i; lll_Element *element = list->gateway;
+    if(list->size - index < index){
+        for(i = list->size; i > index; i--){
+            element = element->previous;
+        }
+    }else{
+        for(i = 0; i < index; i++){
+            element = element->next;
+        }
     }
+
     tpl_lockMutex(list->mutex);
 
     if(element == list->gateway){
@@ -93,21 +116,21 @@ int lll_removeAtIndex(LLL_LIST *list, int index){
 
     list->size--;
     
-    tpl_unlock(list->mutex);
+    tpl_unlockMutex(list->mutex);
     
     return 0;
 }
 
-lll_Element* lll_elementAtIndex(LLL_LIST list, int index){
-    if(NULL == list.gateway){
-        return NULL;
+int lll_elementAtIndex(lll_List *list, int index, void** value){
+    if(NULL == list || NULL == list->gateway || NULL == value){
+        return -1;
     }
     
-    tpl_lockMutex(list.mutex);
+    tpl_lockMutex(list->mutex);
     
-    int i; lll_Element *current = list.gateway;
-    if(list.size - index < index){
-        for(i = list.size; i > index; i--){
+    int i; lll_Element *current = list->gateway;
+    if(list->size - index < index){
+        for(i = list->size; i > index; i--){
             current = current->previous;
         }
     }else{
@@ -116,29 +139,13 @@ lll_Element* lll_elementAtIndex(LLL_LIST list, int index){
         }
     }
     
-    tpl_unlockMutex(list.mutex);
-    return current;
-}
-int lll_indexOfElement(lll_List list, lll_Element *element){
-
-    tpl_lockMutex(list.mutex);
-
-    int i; lll_Element *current = list.gateway;
-    for(i = 0; i < list.size; i++){
-        if(current == element){
-            tpl_unlockMutex(list.mutex);
-            return i;
-        }
-        current = current->next;
-    }
-    
-    tpl_unlockMutex(list.mutex);
-    
-    return -1;
+    *value = current->value;
+    tpl_unlockMutex(list->mutex);
+    return 0;
 }
 
-int lll_size(lll_List list){
-    return list.size;
+int lll_size(lll_List *list){
+    return list->size;
 }
 
 
@@ -146,16 +153,16 @@ int lll_size(lll_List list){
 
 int lll_count(lll_List);
 int lll_check(lll_List);
-int lll_print(lll_List list){
-    tpl_lockMutex(list.mutex);
-    printf("list gateway at %p\n", list.gateway);
-    printf("list size is %i\n", list.size);
+int lll_print(lll_List *list){
+    tpl_lockMutex(list->mutex);
+    printf("list gateway at %p\n", list->gateway);
+    printf("list size is %i\n", list->size);
     printf("elements:\n");
-    int i; lll_Element *current = list.gateway;
-    for(i = 0; i < list.size; i++){
+    int i; lll_Element *current = list->gateway;
+    for(i = 0; i < list->size; i++){
         printf("\t%i: %p, value: %p\n", i, current, current->value);
         current = current->next;
     }
-    tpl_unlockMutex(list.mutex);
+    tpl_unlockMutex(list->mutex);
     return 0;
 }

@@ -9,41 +9,24 @@
 
 #include "../lib/threadingProcessingLibrary/src/threadingProcessingLibrary.h"
 
-
-typedef void* LLL_LIST;
-
-typedef struct lll_Element lll_Element;
-
 typedef struct lll_List lll_List;
-
-struct lll_List {
-	int size;
-	lll_Element *gateway;
-	void* mutex;
-};
-
-struct lll_Element {
-	lll_Element *next;
-	lll_Element *previous;
-	void* value;
-};
 
 /*
 * creates a new list.
 */
-LL_LIST* lll_newList();
+lll_List* lll_newList(void);
 
 /*
 * frees an empty list.
 */
-int lll_freeList(LL_LIST*);
+int lll_freeList(lll_List*);
 
 
 /*
 * adds a new entry to an existing linked list.
 * returns the list index of the entry.
 */
-int lll_add(lll_LIST*, lll_Element*);
+int lll_add(lll_List*, void*);
 
 /*
 * removes the entry at the index form the list.
@@ -53,17 +36,12 @@ int lll_removeAtIndex(lll_List*, int);
 /*
 * retrives the element of the given index.
 */
-lll_Element* lll_elementAtIndex(lll_List, int);
-
-/*
-* returns the index the specivied element
-*/
-int lll_indexOfElement(lll_List, lll_Element*);
+int lll_elementAtIndex(lll_List*, int, void**);
 
 /*
 * retuns the size of the given list.
 */
-int lll_size(lll_List);
+int lll_size(lll_List*);
 
 
 
@@ -82,6 +60,6 @@ int lll_check(lll_List);
 /*
 * prints each element of the list.
 */
-int lll_print(lll_List);
+int lll_print(lll_List*);
 
 #endif /* LINKED_LIST_H_ */
