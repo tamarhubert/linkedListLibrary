@@ -14,7 +14,7 @@ typedef struct lll_Element lll_Element;
 struct lll_List {
 	int size;
 	lll_Element *gateway;
-	void* mutex;
+	tpl_Mutex* mutex;
 };
 struct lll_Element {
 	lll_Element *next;
